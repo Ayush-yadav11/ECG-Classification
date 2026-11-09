@@ -1,0 +1,81 @@
+{
+  "test_beats": 21892,
+  "accuracy": 0.9434,
+  "macro_f1": 0.7751,
+  "per_class": {
+    "N": {
+      "precision": 0.9923,
+      "recall": 0.9436,
+      "f1-score": 0.9674,
+      "support": 18118.0
+    },
+    "S": {
+      "precision": 0.5128,
+      "recall": 0.8309,
+      "f1-score": 0.6342,
+      "support": 556.0
+    },
+    "V": {
+      "precision": 0.9071,
+      "recall": 0.9378,
+      "f1-score": 0.9222,
+      "support": 1448.0
+    },
+    "F": {
+      "precision": 0.2352,
+      "recall": 0.9074,
+      "f1-score": 0.3736,
+      "support": 162.0
+    },
+    "Q": {
+      "precision": 0.9689,
+      "recall": 0.9876,
+      "f1-score": 0.9781,
+      "support": 1608.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      17097,
+      422,
+      119,
+      437,
+      43
+    ],
+    [
+      81,
+      462,
+      9,
+      3,
+      1
+    ],
+    [
+      35,
+      11,
+      1358,
+      37,
+      7
+    ],
+    [
+      5,
+      2,
+      8,
+      147,
+      0
+    ],
+    [
+      12,
+      4,
+      3,
+      1,
+      1588
+    ]
+  ],
+  "epochs_run": 19,
+  "best_epoch": 14,
+  "noise_sigma": 0.05,
+  "previous_version": {
+    "test_accuracy": 0.6093,
+    "noise_sigma": 0.5
+  }
+}

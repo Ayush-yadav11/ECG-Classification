@@ -1,88 +1,65 @@
 # ECG Classification
 
-## Table of Contents
+A 1D convolutional network that sorts single heartbeats from the MIT-BIH Arrhythmia Database into five classes.
 
-\- [Introduction](#_Introduction)  
-\- [Features](#_Features)  
-\- [Installation](#_Installation)  
-\- [Usage](#_Usage)  
-\- [Technologies Used](#_Technologies_Used)  
-\- [Dataset](#_Dataset)  
-\- [Results](#_Results)  
-\- [Contributing](#_Contributing)  
-\- [License](#_License)  
+**[See the project page →](https://ayush-yadav11.github.io/ECG-Classification/)** · [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ayush-yadav11/ECG-Classification/blob/main/ECG_classification.ipynb)
 
-## Introduction
-
-ECG signals are critical for diagnosing various heart conditions. This project builds a classification model to analyze ECG data and predict cardiac anomalies.  
-The solution is designed to be robust and interpretable, targeting both medical researchers and AI enthusiasts.  
-
-## Features
-
-\- Preprocessing and normalization of ECG data.  
-\- Exploratory Data Analysis (EDA) with Matplotlib and Seaborn.  
-\- Deep learning-based classification using TensorFlow and Keras.  
-\- Model evaluation using scikit-learn metrics.  
-\- Visualizations of results and model performance.  
-
-## Installation
-
-Follow these steps to set up the project locally:  
-<br/>1\. Clone the repository:  
-git clone
-<https://github.com/Ayush-yadav11/ECG-Classification.git>  
-<br/><br/>2\. Create a virtual environment:  
-python -m venv env  
-source env/bin/activate # On Windows: env\\Scripts\\activate  
-<br/>3\. Install the required dependencies:  
-pip install -r requirements.txt  
-<br/>
-
-## Usage
-
-1\. Add your ECG dataset in the \`data/\` directory.
-
-2\. Run the preprocessing script:  
-python preprocess.py
-
-3\. Train the model:  
-python train.py  
-<br/>4\. Evaluate the model:  
-python evaluate.py  
-<br/>5\. View results and visualizations:  
-\- Accuracy and loss curves.  
-\- Confusion matrix for classification performance.  
-
-## Technologies Used
-
-\- TensorFlow and Keras: For building and training the deep learning model.  
-\- scikit-learn: For metrics and evaluation.  
-\- NumPy and Pandas: For data manipulation.  
-\- Matplotlib and Seaborn: For data visualization.  
-
-## Dataset
-
-The project requires ECG signal data in a tabular or time-series format. The data set used is :-  
-<br/>\- MIT-BIH Arrhythmia Dataset  
-<br/>
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white)
+![Keras](https://img.shields.io/badge/Keras_3-D00000?style=flat-square&logo=keras&logoColor=white)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikitlearn&logoColor=white)
 
 ## Results
 
-The model achieves high accuracy in classifying ECG signals. Below are some highlights:  
-<br/>\- Training accuracy: 70.43%  
-\- Validation accuracy: 65.63%  
-\- Confusion matrix and ROC curves are available for analysis in the \`results/\` folder.  
+Scored once on the 21,892 beats of the test file: **94.34% accuracy**, macro F1 0.775.
 
-## Contributing
+| Class | Meaning | Recall | Precision | Test beats |
+|---|---|---|---|---|
+| N | Normal (bundle branch block included) | 94.4% | 99.2% | 18,118 |
+| S | Supraventricular ectopic | 83.1% | 51.3% | 556 |
+| V | Ventricular ectopic | 93.8% | 90.7% | 1,448 |
+| F | Fusion | 90.7% | 23.5% | 162 |
+| Q | Paced or unclassifiable | 98.8% | 96.9% | 1,608 |
 
-Contributions are welcome! Please follow these steps:  
-<br/>1\. Fork the repository.  
-2\. Create a feature branch:  
-<br/>git checkout -b feature-name  
-<br/>3\. Commit your changes and push to the branch:  
-<br/>git commit -m "Added feature-name"  
-git push origin feature-name
+Recall is high for every class. Precision is low for the rare classes: training resamples them to 20,000 beats each, so the network also calls some normal beats S (422) or F (437). The full numbers are in [`results/metrics.json`](results/metrics.json); the figures are in [`results/`](results/).
 
-4\. Open a pull request.  
+![Confusion matrix](results/confusion_matrix.png)
 
+## What changed from the first version
 
+The first version reached 60.93% on the test file. Three fixes:
+
+1. **Noise.** Every training beat got Gaussian noise with σ = 0.5. Beats are scaled 0 to 1, so the noise buried the waveform. It is now σ = 0.05, a light augmentation.
+2. **Early stopping.** It watched the test set; it now watches a 10% validation split of the training file, and the test set is scored once at the end.
+3. **Labels.** Chart labels now follow the label order N, S, V, F, Q.
+
+The network is unchanged: two convolution blocks (64 and 32 filters) and two dense layers (128 and 64 units) with dropout, 199,845 parameters. It trained for 19 epochs; the best was epoch 14.
+
+## Run it
+
+Open the notebook in Colab and run every cell: it downloads the data with `kagglehub`. Locally:
+
+```bash
+pip install -r requirements.txt
+jupyter notebook ECG_classification.ipynb
+```
+
+Keras 3 runs on TensorFlow, PyTorch or JAX; set `KERAS_BACKEND` to the one you have. On a laptop CPU with the PyTorch backend it trained in about 25 minutes. The trained model is saved as `ecg_classification.keras`.
+
+## Data
+
+The [MIT-BIH Arrhythmia Database](https://physionet.org/content/mitdb/1.0.0/) on PhysioNet, cut into single beats (187 samples at 125 Hz, scaled 0 to 1) by Kachuee, Fazeli and Sarrafzadeh, *ECG Heartbeat Classification: A Deep Transferable Representation*, 2018, and shared on Kaggle as `shayanfazeli/heartbeat`: 87,554 training beats and 21,892 test beats.
+
+This is a study project, not a medical device.
+
+## Project structure
+
+```
+ECG_classification.ipynb   load, balance, train, evaluate, export (runs top to bottom)
+ecg_classification.keras   the trained network
+results/                   metrics.json and the notebook's figures
+site/                      the project page (GitHub Pages) and its data/ecg.json
+```
+
+## Author
+
+**Ayush Yadav** · [Portfolio](https://ayush-yadav.me/) · [GitHub](https://github.com/Ayush-yadav11) · [LinkedIn](https://www.linkedin.com/in/ayushyadav2611/)

@@ -1,8 +1,10 @@
-
-tensorflow==2.12.0
-keras==2.12.0
-scikit-learn==1.3.0
-numpy==1.25.2
-pandas==2.1.1
-matplotlib==3.7.1
-seaborn==0.12.2
+# Keras 3 runs on TensorFlow, PyTorch or JAX: install one backend and set KERAS_BACKEND
+# (the notebook defaults to tensorflow; it was retrained on torch with KERAS_BACKEND=torch)
+keras>=3.0
+tensorflow>=2.16
+kagglehub>=0.3
+scikit-learn>=1.3
+numpy>=1.25
+pandas>=2.1
+matplotlib>=3.7
+seaborn>=0.12
